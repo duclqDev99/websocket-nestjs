@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #messages {
+            border: 1px solid #ccc;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+
+        #sendMessage {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        #sendButton {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>WebSocket Client</h1>
+
+    <div id="messages"></div>
+
+    <input type="text" id="sendMessage" placeholder="Nhập tin nhắn..." />
+    <button id="sendButton">Gửi</button>
+
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <script>
+        // Kết nối WebSocket tới server NestJS thông qua socket.io
+        const socket = io('http://localhost:4800', {
+            auth: {
+                token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYXBwL3ZlcmlmeS1sb2dpbi1waG9uZS1udW1iZXIiLCJpYXQiOjE3MzE0OTYyNTIsImV4cCI6MTczMTQ5OTg1MiwibmJmIjoxNzMxNDk2MjUyLCJqdGkiOiJOR2NrdzVIeDNodGFwdUxjIiwic3ViIjoiMTU3IiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyIsInVzZXJfaWQiOjE1N30.ALsvlcrYjc1kOA89oIAW163GICLY85c4mGNXyZV46sw'
+            }
+        });
+
+        // Lắng nghe sự kiện 'connect' từ server (thay vì 'onopen' trong WebSocket thuần)
+        socket.on('connect', () => {
+            console.log('Đã kết nối tới WebSocket server');
+        });
+
+        socket.emit('findAllMessages', {
+            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            first: 0,
+            rows: 10,
+            filter: 'test',
+        });
+
+        // Lắng nghe sự kiện 'roomDetailsFetched' để nhận thông tin phòng từ server
+        socket.on('allMessages', (messages) => {
+            console.log('allMessages:', messages);
+        });
+
+        // Lắng nghe tin nhắn từ server
+        // socket.on('message', function(data) {
+        //     const messagesDiv = document.getElementById('messages');
+        //     messagesDiv.innerHTML += `<p><strong>Server:</strong> ${data}</p>`;
+        //     messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        // });
+
+        // // Lắng nghe sự kiện ngắt kết nối
+        // socket.on('disconnect', () => {
+        //     console.log('Kết nối WebSocket đã đóng');
+        // });
+
+        // // Gửi tin nhắn khi nhấn nút
+        // document.getElementById('sendButton').onclick = function() {
+        //     const message = document.getElementById('sendMessage').value;
+        //     if (message.trim() !== '') {
+        //         socket.emit('message', message); // Gửi tin nhắn tới server
+        //         const messagesDiv = document.getElementById('messages');
+        //         messagesDiv.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+        //         messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        //         document.getElementById('sendMessage').value = ''; // Xóa ô nhập
+        //     }
+        // };
+
+        // // Gửi tin nhắn khi nhấn Enter
+        // document.getElementById('sendMessage').addEventListener('keypress', function(event) {
+        //     if (event.key === 'Enter') {
+        //         document.getElementById('sendButton').click();
+        //     }
+        // });
+    </script>
+</body>
+
+</html>
